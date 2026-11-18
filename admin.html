@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت | طوبی پرفیوم</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', sans-serif; }
+        body { background-color: #f4f5f7; color: #222; direction: rtl; padding-bottom: 50px; }
+        header { background: #111; color: #fff; padding: 15px 30px; text-align: center; border-bottom: 3px solid #d4af37; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 1.3rem; color: #d4af37; }
+        .back-link { color: #fff; text-decoration: none; background: #333; padding: 8px 15px; border-radius: 6px; font-size: 0.85rem; transition: background 0.2s; }
+        .back-link:hover { background: #d4af37; color: #000; }
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 15px; }
+        .card { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid #eaeaea; }
+        .card h2 { font-size: 1.15rem; margin-bottom: 20px; color: #111; border-right: 4px solid #d4af37; padding-right: 10px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 0.85rem; color: #444; }
+        input[type="text"], input[type="number"], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; }
+        textarea { resize: vertical; height: 80px; }
+        .submit-btn { background: #d4af37; color: #000; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem; width: 100%; transition: background 0.2s; }
+        .submit-btn:hover { background: #c29e2f; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px 10px; text-align: right; border-bottom: 1px solid #eee; font-size: 0.85rem; }
+        th { background: #fafafa; color: #333; font-weight: bold; }
+        .thumb { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; background: #eee; }
+        .btn-action { padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; border: none; font-weight: bold; margin-left: 5px; }
+        .btn-del { background: #ff4d4f; color: #fff; }
+        .btn-del:hover { background: #d9363e; }
+        .btn-approve { background: #52c41a; color: #fff; }
+        .btn-reject { background: #faad14; color: #fff; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+        .badge-pending { background: #fffbe6; color: #fa8c16; border: 1px solid #ffe58f; }
+        .badge-approved { background: #f6ffed; color: #52c41a; border: 1px solid #b7eb8f; }
+        .badge-rejected { background: #fff1f0; color: #ff4d4f; border: 1px solid #ffa39e; }
+        .empty-text { text-align: center; color: #888; padding: 20px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>پنل مدیریت طوبی پرفیوم</h1>
+        <a href="index.html" class="back-link">← بازگشت به سایت اصلی</a>
+    </header>
+
+    <div class="container">
+        
+        <!-- ۱. بخش افزودن محصول و موجودی -->
+        <div class="card">
+            <h2>افزودن عطر و تنظیم موجودی</h2>
+            <form id="product-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">نام عطر:</label>
+                        <input type="text" id="name" required placeholder="مثلاً: بلو دو شانل">
+                    </div>
+                    <div class="form-group">
+                        <label for="price">قیمت (تومان):</label>
+                        <input type="number" id="price" required placeholder="مثلاً: 2500000">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="stock">تعداد موجودی انبار:</label>
+                        <input type="number" id="stock" required placeholder="مثلاً: 15" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="image">تصویر محصول:</label>
+                        <input type="file" id="image" accept="image/*" style="font-size: 0.85rem; padding-top: 6px;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="description">توضیحات کوتاه:</label>
+                    <textarea id="description" placeholder="رایحه خنک و تلخ، ماندگاری بالا..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">ثبت و افزودن به فروشگاه</button>
+            </form>
+        </div>
+
+        <!-- ۲. بخش مدیریت محصولات و موجودی -->
+        <div class="card">
+            <h2>مدیریت محصولات و موجودی انبار</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>تصویر</th>
+                        <th>نام عطر</th>
+                        <th>قیمت</th>
+                        <th>موجودی</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-product-list">
+                    <!-- بارگذاری داینامیک -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ۳. بخش مدیریت سفارشات (تایید یا رد) -->
+        <div class="card">
+            <h2>مدیریت سفارشات مشتریان (تایید / رد)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>شناسه سفارش</th>
+                        <th>نام مشتری / مشخصات</th>
+                        <th>مبلغ کل</th>
+                        <th>وضعیت</th>
+                        <th>عملیات مدیریت</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-orders-list">
+                    <!-- بارگذاری داینامیک سفارشات -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        // بارگذاری اولیه اطلاعات در پنل
+        window.onload = function() {
+            loadAdminProducts();
+            loadAdminOrders();
+        }
+
+        // ثبت محصول جدید
+        document.getElementById('product-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const price = document.getElementById('price').value;
+            const stock = document.getElementById('stock').value;
+            const description = document.getElementById('description').value;
+            const imageInput = document.getElementById('image');
+
+            const reader = new FileReader();
+            if (imageInput.files && imageInput.files[0]) {
+                reader.readAsDataURL(imageInput.files[0]);
+                reader.onload = function(e) {
+                    saveNewProduct(name, price, stock, description, e.target.result);
+                }
+            } else {
+                saveNewProduct(name, price, stock, description, '');
+            }
+        });
+
+        function saveNewProduct(name, price, stock, description, image) {
+            let products = JSON.parse(localStorage.getItem('touba_products')) || [];
+            const newProduct = {
+                id: Date.now(),
+                name,
+                price: Number(price),
+                stock: Number(stock),
+                description,
+                image
+            };
+            products.push(newProduct);
+            localStorage.setItem('touba_products', JSON.stringify(products));
+
+            alert('محصول جدید با موفقیت به انبار و فروشگاه اضافه شد!');
+            document.getElementById('product-form').reset();
+            loadAdminProducts();
+        }
+
+        // نمایش لیست محصولات در پنل
+        function loadAdminProducts() {
+            const tbody = document.getElementById('admin-product-list');
+            let products = JSON.parse(localStorage.getItem('touba_products')) || [];
+
+            if (products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="empty-text">هیچ محصولی در انبار ثبت نشده است.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            products.forEach(product => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><img src="${product.image || 'https://via.placeholder.com/45'}" class="thumb"></td>
+                    <td><b>${product.name}</b></td>
+                    <td>${Number(product.price).toLocaleString()} تومان</td>
+                    <td><span style="font-weight:bold; color:${product.stock > 0 ? '#52c41a' : '#ff4d4f'}">${product.stock} عدد</span></td>
+                    <td><button class="btn-action btn-del" onclick="deleteProduct(${product.id})">حذف</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // حذف محصول
+        function deleteProduct(id) {
+            if (confirm('آیا از حذف این عطر از فروشگاه اطمینان دارید؟')) {
+                let products = JSON.parse(localStorage.getItem('touba_products')) || [];
+                products = products.filter(p => p.id !== id);
+                localStorage.setItem('touba_products', JSON.stringify(products));
+                loadAdminProducts();
+            }
+        }
+
+        // بارگذاری و نمایش سفارشات ثبت شده
+        function loadAdminOrders() {
+            const tbody = document.getElementById('admin-orders-list');
+            let orders = JSON.parse(localStorage.getItem('touba_orders')) || [];
+
+            if (orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="empty-text">هنوز سفارشی از سمت مشتریان ثبت نشده است.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            orders.forEach(order => {
+                let badgeClass = 'badge-pending';
+                let statusText = 'در انتظار بررسی';
+                if (order.status === 'approved') { badgeClass = 'badge-approved'; statusText = 'تایید شده ✓'; }
+                if (order.status === 'rejected') { badgeClass = 'badge-rejected'; statusText = 'رد شده ✗'; }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>#${order.id.toString().slice(-6)}</td>
+                    <td><b>${order.customerName || 'مشتری عزیز'}</b><br><small style="color:#666;">تلفن: ${order.customerPhone || 'ثبت نشده'}</small></td>
+                    <td>${Number(order.totalPrice || 0).toLocaleString()} تومان</td>
+                    <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                    <td>
+                        <button class="btn-action btn-approve" onclick="updateOrderStatus(${order.id}, 'approved')">تایید</button>
+                        <button class="btn-action btn-reject" onclick="updateOrderStatus(${order.id}, 'rejected')">رد</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // تغییر وضعیت سفارش (تایید یا رد)
+        function updateOrderStatus(orderId, status) {
+            let orders = JSON.parse(localStorage.getItem('touba_orders')) || [];
+            orders = orders.map(o => {
+                if (o.id === orderId) {
+                    o.status = status;
+                }
+                return o;
+            });
+            localStorage.setItem('touba_orders', JSON.stringify(orders));
+            loadAdminOrders();
+        }
+    </script>
+</body>
+</html>
