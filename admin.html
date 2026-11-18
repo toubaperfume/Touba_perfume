@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>پنل مدیریت | طوبی پرفیوم</title>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', sans-serif; }
         body { background-color: #f4f5f7; color: #222; direction: rtl; padding-bottom: 50px; }
@@ -20,6 +21,10 @@
         label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 0.85rem; color: #444; }
         input[type="text"], input[type="number"], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; }
         textarea { resize: vertical; height: 80px; }
+        .variants-box { background: #fafafa; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px; }
+        .variants-box h3 { font-size: 0.95rem; color: #333; margin-bottom: 10px; }
+        .variant-row { display: grid; grid-template-columns: 100px 1fr 1fr; gap: 10px; align-items: center; margin-bottom: 10px; }
+        .variant-row span { font-weight: bold; font-size: 0.85rem; color: #555; }
         .submit-btn { background: #d4af37; color: #000; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem; width: 100%; transition: background 0.2s; }
         .submit-btn:hover { background: #c29e2f; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
@@ -28,14 +33,7 @@
         .thumb { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; background: #eee; }
         .btn-action { padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; border: none; font-weight: bold; margin-left: 5px; }
         .btn-del { background: #ff4d4f; color: #fff; }
-        .btn-del:hover { background: #d9363e; }
-        .btn-approve { background: #52c41a; color: #fff; }
-        .btn-reject { background: #faad14; color: #fff; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
-        .badge-pending { background: #fffbe6; color: #fa8c16; border: 1px solid #ffe58f; }
-        .badge-approved { background: #f6ffed; color: #52c41a; border: 1px solid #b7eb8f; }
-        .badge-rejected { background: #fff1f0; color: #ff4d4f; border: 1px solid #ffa39e; }
-        .empty-text { text-align: center; color: #888; padding: 20px; }
+        .btn-del:hover { background: name="d9363e"; }
     </style>
 </head>
 <body>
@@ -47,9 +45,9 @@
 
     <div class="container">
         
-        <!-- ۱. بخش افزودن محصول و موجودی -->
+        <!-- افزودن عطر و حجم‌ها -->
         <div class="card">
-            <h2>افزودن عطر و تنظیم موجودی</h2>
+            <h2>افزودن عطر جدید با قیمت و موجودی حجم‌ها</h2>
             <form id="product-form">
                 <div class="form-row">
                     <div class="form-group">
@@ -57,62 +55,66 @@
                         <input type="text" id="name" required placeholder="مثلاً: بلو دو شانل">
                     </div>
                     <div class="form-group">
-                        <label for="price">قیمت (تومان):</label>
-                        <input type="number" id="price" required placeholder="مثلاً: 2500000">
+                        <label for="brand">برند / دسته‌بندی:</label>
+                        <input type="text" id="brand" required placeholder="مثلاً: شانل - Chanel">
                     </div>
                 </div>
+
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="stock">تعداد موجودی انبار:</label>
-                        <input type="number" id="stock" required placeholder="مثلاً: 15" value="10">
+                        <label for="image_url">لینک عکس محصول:</label>
+                        <input type="text" id="image_url" placeholder="https://... (یا آدرس عکس)">
                     </div>
                     <div class="form-group">
-                        <label for="image">تصویر محصول:</label>
-                        <input type="file" id="image" accept="image/*" style="font-size: 0.85rem; padding-top: 6px;">
+                        <label for="description">توضیحات کوتاه:</label>
+                        <textarea id="description" placeholder="رایحه خنک و تلخ..."></textarea>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="description">توضیحات کوتاه:</label>
-                    <textarea id="description" placeholder="رایحه خنک و تلخ، ماندگاری بالا..."></textarea>
+
+                <!-- تنظیم قیمت و موجودی حجم‌های مختلف -->
+                <div class="variants-box">
+                    <h3>قیمت و موجودی برای هر حجم (تومان و حجم میل موجودی کل)</h3>
+                    
+                    <div class="variant-row">
+                        <span>۱۰ میل:</span>
+                        <input type="number" id="p_10" placeholder="قیمت (تومان)">
+                        <input type="number" id="s_10" placeholder="موجودی کل (میل)">
+                    </div>
+                    <div class="variant-row">
+                        <span>۲۰ میل:</span>
+                        <input type="number" id="p_20" placeholder="قیمت (تومان)">
+                        <input type="number" id="s_20" placeholder="موجودی کل (میل)">
+                    </div>
+                    <div class="variant-row">
+                        <span>۵۰ میل:</span>
+                        <input type="number" id="p_50" placeholder="قیمت (تومان)">
+                        <input type="number" id="s_50" placeholder="موجودی کل (میل)">
+                    </div>
+                    <div class="variant-row">
+                        <span>۱۰۰ میل:</span>
+                        <input type="number" id="p_100" placeholder="قیمت (تومان)">
+                        <input type="number" id="s_100" placeholder="موجودی کل (میل)">
+                    </div>
                 </div>
-                <button type="submit" class="submit-btn">ثبت و افزودن به فروشگاه</button>
+
+                <button type="submit" class="submit-btn">ثبت عطر در دیتابیس و سایت</button>
             </form>
         </div>
 
-        <!-- ۲. بخش مدیریت محصولات و موجودی -->
+        <!-- مدیریت محصولات موجود در دیتابیس -->
         <div class="card">
-            <h2>مدیریت محصولات و موجودی انبار</h2>
+            <h2>محصولات ثبت‌شده در سایت</h2>
             <table>
                 <thead>
                     <tr>
                         <th>تصویر</th>
                         <th>نام عطر</th>
-                        <th>قیمت</th>
-                        <th>موجودی</th>
+                        <th>برند</th>
                         <th>عملیات</th>
                     </tr>
                 </thead>
                 <tbody id="admin-product-list">
-                    <!-- بارگذاری داینامیک -->
-                </tbody>
-            </table>
-        </div>
-
-        <!-- ۳. بخش مدیریت سفارشات (تایید یا رد) -->
-        <div class="card">
-            <h2>مدیریت سفارشات مشتریان (تایید / رد)</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>شناسه سفارش</th>
-                        <th>نام مشتری / مشخصات</th>
-                        <th>مبلغ کل</th>
-                        <th>وضعیت</th>
-                        <th>عملیات مدیریت</th>
-                    </tr>
-                </thead>
-                <tbody id="admin-orders-list">
-                    <!-- بارگذاری داینامیک سفارشات -->
+                    <tr><td colspan="4" style="text-align:center; color:#888;">در حال بارگذاری از دیتابیس...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -120,128 +122,103 @@
     </div>
 
     <script>
-        // بارگذاری اولیه اطلاعات در پنل
+        const SUPABASE_URL = "https://lzhowunlkjhhjcyhgmfi.supabase.co";
+        const SUPABASE_KEY = "GAPGPTMASKTOKEN62xy6asuh7hX0X";
+        const DB = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         window.onload = function() {
             loadAdminProducts();
-            loadAdminOrders();
-        }
+        };
 
-        // ثبت محصول جدید
-        document.getElementById('product-form').addEventListener('submit', function(e) {
+        // ثبت محصول جدید به همراه حجم‌ها در دیتابیس
+        document.getElementById('product-form').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const name = document.getElementById('name').value;
-            const price = document.getElementById('price').value;
-            const stock = document.getElementById('stock').value;
-            const description = document.getElementById('description').value;
-            const imageInput = document.getElementById('image');
+            const name = document.getElementById('name').value.trim();
+            const brand = document.getElementById('brand').value.trim();
+            const image_url = document.getElementById('image_url').value.trim();
+            const description = document.getElementById('description').value.trim();
 
-            const reader = new FileReader();
-            if (imageInput.files && imageInput.files[0]) {
-                reader.readAsDataURL(imageInput.files[0]);
-                reader.onload = function(e) {
-                    saveNewProduct(name, price, stock, description, e.target.result);
+            const volumes = [10, 20, 50, 100];
+            const variantsData = [];
+
+            volumes.forEach(vol => {
+                const price = Number(document.getElementById(`p_${vol}`).value || 0);
+                const stock = Number(document.getElementById(`s_${vol}`).value || 0);
+                if (price > 0) {
+                    variantsData.push({
+                        volume_ml: vol,
+                        price_toman: price,
+                        stock_ml: stock,
+                        is_active: true
+                    });
                 }
+            });
+
+            if (variantsData.length === 0) {
+                alert('لطفاً حداقل قیمت یک حجم (مثلاً ۵۰ میل یا ۱۰۰ میل) را وارد کنید.');
+                return;
+            }
+
+            // ۱. ثبت محصول اصلی
+            const prodRes = await DB.from('products').insert([{
+                name,
+                brand,
+                description,
+                image_url,
+                is_active: true
+            }]).select();
+
+            if (prodRes.error) {
+                alert('خطا در ثبت محصول: ' + prodRes.error.message);
+                return;
+            }
+
+            const newProduct = prodRes.data[0];
+
+            // ۲. ثبت حجم‌ها برای این محصول
+            for (let v of variantsData) {
+                v.product_id = newProduct.id;
+            }
+
+            const varRes = await DB.from('product_variants').insert(variantsData);
+            if (varRes.error) {
+                alert('محصول ثبت شد اما در ثبت حجم‌ها خطا رخ داد: ' + varRes.error.message);
             } else {
-                saveNewProduct(name, price, stock, description, '');
+                alert('عطر با موفقیت به انبار و سایت اضافه شد!');
+                document.getElementById('product-form').reset();
+                loadAdminProducts();
             }
         });
 
-        function saveNewProduct(name, price, stock, description, image) {
-            let products = JSON.parse(localStorage.getItem('touba_products')) || [];
-            const newProduct = {
-                id: Date.now(),
-                name,
-                price: Number(price),
-                stock: Number(stock),
-                description,
-                image
-            };
-            products.push(newProduct);
-            localStorage.setItem('touba_products', JSON.stringify(products));
-
-            alert('محصول جدید با موفقیت به انبار و فروشگاه اضافه شد!');
-            document.getElementById('product-form').reset();
-            loadAdminProducts();
-        }
-
-        // نمایش لیست محصولات در پنل
-        function loadAdminProducts() {
+        // بارگذاری محصولات از دیتابیس برای پنل ادمین
+        async function loadAdminProducts() {
             const tbody = document.getElementById('admin-product-list');
-            let products = JSON.parse(localStorage.getItem('touba_products')) || [];
+            const res = await DB.from('products').select('id, name, brand, image_url').eq('is_active', true).order('created_at');
 
-            if (products.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="empty-text">هیچ محصولی در انبار ثبت نشده است.</td></tr>`;
+            if (res.error || !res.data || res.data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#888;">هیچ محصولی در دیتابیس یافت نشد.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = '';
-            products.forEach(product => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><img src="${product.image || 'https://via.placeholder.com/45'}" class="thumb"></td>
-                    <td><b>${product.name}</b></td>
-                    <td>${Number(product.price).toLocaleString()} تومان</td>
-                    <td><span style="font-weight:bold; color:${product.stock > 0 ? '#52c41a' : '#ff4d4f'}">${product.stock} عدد</span></td>
-                    <td><button class="btn-action btn-del" onclick="deleteProduct(${product.id})">حذف</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
+            tbody.innerHTML = res.data.map(p => `
+                <tr>
+                    <td><img src="${p.image_url || 'https://via.placeholder.com/45'}" class="thumb"></td>
+                    <td><b>${p.name}</b></td>
+                    <td>${p.brand || ''}</td>
+                    <td><button class="btn-action btn-del" onclick="deleteProduct('${p.id}')">حذف عطر</button></td>
+                </tr>
+            `).join('');
         }
 
-        // حذف محصول
-        function deleteProduct(id) {
-            if (confirm('آیا از حذف این عطر از فروشگاه اطمینان دارید؟')) {
-                let products = JSON.parse(localStorage.getItem('touba_products')) || [];
-                products = products.filter(p => p.id !== id);
-                localStorage.setItem('touba_products', JSON.stringify(products));
+        // حذف محصول و حجم‌های آن از دیتابیس
+        async function deleteProduct(id) {
+            if (confirm('آیا از حذف کامل این عطر از سایت اطمینان دارید؟')) {
+                await DB.from('product_variants').delete().eq('product_id', id);
+                await DB.from('products').delete().eq('id', id);
+                alert('محصول با موفقیت حذف شد.');
                 loadAdminProducts();
             }
-        }
-
-        // بارگذاری و نمایش سفارشات ثبت شده
-        function loadAdminOrders() {
-            const tbody = document.getElementById('admin-orders-list');
-            let orders = JSON.parse(localStorage.getItem('touba_orders')) || [];
-
-            if (orders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="empty-text">هنوز سفارشی از سمت مشتریان ثبت نشده است.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = '';
-            orders.forEach(order => {
-                let badgeClass = 'badge-pending';
-                let statusText = 'در انتظار بررسی';
-                if (order.status === 'approved') { badgeClass = 'badge-approved'; statusText = 'تایید شده ✓'; }
-                if (order.status === 'rejected') { badgeClass = 'badge-rejected'; statusText = 'رد شده ✗'; }
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>#${order.id.toString().slice(-6)}</td>
-                    <td><b>${order.customerName || 'مشتری عزیز'}</b><br><small style="color:#666;">تلفن: ${order.customerPhone || 'ثبت نشده'}</small></td>
-                    <td>${Number(order.totalPrice || 0).toLocaleString()} تومان</td>
-                    <td><span class="badge ${badgeClass}">${statusText}</span></td>
-                    <td>
-                        <button class="btn-action btn-approve" onclick="updateOrderStatus(${order.id}, 'approved')">تایید</button>
-                        <button class="btn-action btn-reject" onclick="updateOrderStatus(${order.id}, 'rejected')">رد</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // تغییر وضعیت سفارش (تایید یا رد)
-        function updateOrderStatus(orderId, status) {
-            let orders = JSON.parse(localStorage.getItem('touba_orders')) || [];
-            orders = orders.map(o => {
-                if (o.id === orderId) {
-                    o.status = status;
-                }
-                return o;
-            });
-            localStorage.setItem('touba_orders', JSON.stringify(orders));
-            loadAdminOrders();
         }
     </script>
 </body>
